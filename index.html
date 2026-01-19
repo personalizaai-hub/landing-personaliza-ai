@@ -464,14 +464,87 @@
             border: 2px solid rgba(255,255,255,0.3);
         }
 
+        .price-old {
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-decoration: line-through;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
         .price {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
+            color: #FFD700;
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
         }
 
         .price-label {
             font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .promo-badge {
+            background: #FFD700;
+            color: var(--rosa);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .countdown-timer {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1.5rem auto;
+            max-width: 400px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .timer-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.95;
+        }
+
+        .timer-display {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .timer-unit {
+            text-align: center;
+        }
+
+        .timer-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            min-width: 70px;
+        }
+
+        .timer-text {
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
             opacity: 0.9;
         }
 
@@ -560,6 +633,11 @@
 
             .price {
                 font-size: 2.5rem;
+            }
+
+            .timer-number {
+                font-size: 2rem;
+                min-width: 60px;
             }
         }
 
@@ -924,12 +1002,28 @@
     <!-- CTA Final -->
     <section class="cta-section">
         <div class="cta-content">
+            <div class="promo-badge">🔥 PROMOÇÃO RELÂMPAGO</div>
             <h2>Comece Hoje a Ter Clareza, Controle e Tranquilidade Com o Seu Dinheiro</h2>
             <p>Invista em você e na sua organização financeira. Acesso imediato após a compra!</p>
             
+            <div class="countdown-timer">
+                <div class="timer-label">⏰ Esta oferta expira em:</div>
+                <div class="timer-display">
+                    <div class="timer-unit">
+                        <div class="timer-number" id="minutes">15</div>
+                        <div class="timer-text">Minutos</div>
+                    </div>
+                    <div class="timer-unit">
+                        <div class="timer-number" id="seconds">00</div>
+                        <div class="timer-text">Segundos</div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="price-box">
-                <div class="price">R$ 97</div>
-                <div class="price-label">Pagamento único • Sem mensalidades</div>
+                <div class="price-old">De R$ 97,00</div>
+                <div class="price">R$ 29,90</div>
+                <div class="price-label">Kit Finanças • Pagamento único • Sem mensalidades</div>
             </div>
             
             <a href="https://pay.kiwify.com.br/7jp42fD" class="cta-button-large">Garantir Minha Planilha Agora</a>
@@ -998,6 +1092,43 @@
         document.querySelectorAll('.benefit-card, .step, .feature-item, .testimonial-card').forEach(el => {
             observer.observe(el);
         });
+
+        // Countdown Timer (15 minutos)
+        function startCountdown() {
+            const countdownKey = 'countdown_end_time';
+            let endTime = localStorage.getItem(countdownKey);
+            
+            if (!endTime) {
+                // Define 15 minutos a partir de agora
+                endTime = new Date().getTime() + (15 * 60 * 1000);
+                localStorage.setItem(countdownKey, endTime);
+            } else {
+                endTime = parseInt(endTime);
+            }
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    // Timer acabou, reinicia
+                    localStorage.removeItem(countdownKey);
+                    startCountdown();
+                    return;
+                }
+
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        startCountdown();
     </script>
 </body>
 </html>
